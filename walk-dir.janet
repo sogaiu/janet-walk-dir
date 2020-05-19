@@ -80,3 +80,62 @@
              acc)
 
  )
+
+(defn visit-files
+  [path a-fn]
+  (when (is-dir? path)
+    (each thing (os/dir path)
+      (def thing-path
+        (path/join path thing))
+      (cond
+        (is-file? thing-path)
+        (a-fn thing-path)
+        #
+        (is-dir? thing-path)
+        (visit-files thing-path a-fn)))))
+
+(comment
+
+ (visit-files (path/join (os/getenv "HOME")
+                         "src/hpkgs/")
+              |(eprint $))
+
+ )
+
+(defn visit-dirs
+  [path a-fn]
+  (when (is-dir? path)
+    (each thing (os/dir path)
+      (def thing-path
+        (path/join path thing))
+      (when (is-dir? thing-path)
+        (a-fn thing-path)
+        (visit-dirs thing-path a-fn)))))
+
+(comment
+
+ (visit-dirs (path/join (os/getenv "HOME")
+                         "src/hpkgs/")
+             |(eprint $))
+
+ )
+
+(defn visit
+  [path a-fn]
+  (when (is-dir? path)
+    (each thing (os/dir path)
+      (def thing-path
+        (path/join path thing))
+      (when (or (is-file? thing-path)
+                (is-dir? thing-path))
+        (a-fn thing-path))
+      (when (is-dir? thing-path)
+        (visit thing-path a-fn)))))
+
+(comment
+
+ (visit (path/join (os/getenv "HOME")
+                   "src/hermes/doc")
+        |(eprint $))
+
+ )
