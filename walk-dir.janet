@@ -2,7 +2,8 @@
 
 (defn is-dir?
   [path]
-  (when-let [stat (os/lstat path)]
+  (when-let [path path
+             stat (os/lstat path)]
     (= :directory (stat :mode))))
 
 (comment
@@ -13,7 +14,8 @@
 
 (defn is-file?
   [path]
-  (when-let [stat (os/lstat path)]
+  (when-let [path path
+             stat (os/lstat path)]
     (= :file (stat :mode))))
 
 (comment
