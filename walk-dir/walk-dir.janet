@@ -79,8 +79,8 @@
   ``
   Recursively visit directory tree starting at `path`, accumulating
   directory paths by default into array `acc`.  If optional
-  argument `a-fn` is specified, instead accumulate the results of
-  applying `a-fn` to each encountered directory path.
+  argument `a-fn` is specified, instead accumulate only directory paths
+  for which `a-fn` applied to the directory path returns a truthy result.
   ``
   [path acc &opt a-fn]
   (default a-fn identity)
@@ -89,7 +89,8 @@
       (def thing-path
         (path/join path thing))
       (when (is-dir? thing-path)
-        (array/push acc thing-path)
+        (when (a-fn thing-path)
+          (array/push acc thing-path))
         (just-dirs thing-path acc a-fn))))
   acc)
 
