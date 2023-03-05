@@ -28,16 +28,20 @@
 
 (comment
 
-  (is-file? (path/join (os/getenv "HOME") ".bashrc"))
-  # =>
-  true
-
   (is-file? (or (os/getenv "HOME")
                 (os/getenv "USERPROFILE")))
   # =>
   false
 
-  (is-file? (path/join (os/getenv "HOME") ".config/nvim/init.vim"))
+  (let [name (string (gensym))]
+    (if (os/stat name)
+      true
+      (do
+        (spit name "hello")
+        (def res
+          (is-file? name))
+        (os/rm name)
+        res)))
   # =>
   true
 
