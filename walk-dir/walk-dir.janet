@@ -20,6 +20,25 @@
 
   )
 
+(defn path-ext
+  [path]
+  (let [results (string/find-all "." path)]
+    (if-let [last-one (last results)]
+      (string/slice path last-one)
+      "")))
+
+(comment
+
+  (path-ext "hello.janet")
+  # =>
+  ".janet"
+
+  (path-ext "bye")
+  # =>
+  ""
+
+  )
+
 (defn is-dir?
   [path]
   (when-let [path path
