@@ -1,22 +1,36 @@
-(def sep
-  (if (= :windows (os/which))
-    "\\"
-    "/"))
-
 (defn path-join
-  [left right &opt sepa]
-  (default sepa sep)
-  (string left sepa right))
+  [& parts]
+  (string/join parts
+               (dyn :path-fs-sep
+                    (if (= :windows (os/which))
+                      `\`
+                      "/"))))
 
 (comment
 
-  (path-join "/tmp" "test.txt" "/")
+  (do
+    (def sep (dyn :path-fs-sep))
+    (defer (setdyn :path-fs-sep sep)
+      (setdyn :path-fs-sep "/")
+      (path-join "/tmp" "test.txt")))
   # =>
   "/tmp/test.txt"
 
-  (path-join "C:\\windows" "system32" "\\")
+  (do
+    (def sep (dyn :path-fs-sep))
+    (defer (setdyn :path-fs-sep sep)
+      (setdyn :path-fs-sep "/")
+      (path-join "/tmp" "foo" "test.txt")))
   # =>
-  "C:\\windows\\system32"
+  "/tmp/foo/test.txt"
+
+  (do
+    (def sep (dyn :path-fs-sep))
+    (defer (setdyn :path-fs-sep sep)
+      (setdyn :path-fs-sep `\`)
+      (path-join "C:" "windows" "system32")))
+  # =>
+  `C:\windows\system32`
 
   )
 
