@@ -163,9 +163,8 @@
 
 (defn visit-files
   ``
-  Recursively visit directory tree starting at `path`.  If optional
-  argument `a-fn` is specified, apply `a-fn` to each encountered file
-  (not directory) path.
+  Recursively traverse directory tree starting at `path`, applying
+  argument `a-fn` to each encountered file (not directory) path.
   ``
   [path a-fn]
   (when (is-dir? path)
@@ -189,9 +188,8 @@
 
 (defn visit-dirs
   ``
-  Recursively visit directory tree starting at `path`.  If optional
-  argument `a-fn` is specified, apply `a-fn` to each encountered directory
-  path.
+  Recursively traverse directory tree starting at `path`, applying
+  argument `a-fn` to each encountered directory path.
   ``
   [path a-fn]
   (when (is-dir? path)
@@ -212,9 +210,8 @@
 
 (defn visit
   ``
-  Recursively visit directory tree starting at `path`.  If optional
-  argument `a-fn` is specified, apply `a-fn` to each encountered
-  path (file and directory).
+  Recursively traverse directory tree starting at `path`, applying
+  argument `a-fn` to each encountered path (file and directory).
   ``
   [path a-fn]
   (when (is-dir? path)
