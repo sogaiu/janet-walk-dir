@@ -169,8 +169,7 @@
   [path a-fn]
   (when (is-dir? path)
     (each thing (os/dir path)
-      (def thing-path
-        (path-join path thing))
+      (def thing-path (path-join path thing))
       (cond
         (is-file? thing-path)
         (a-fn thing-path)
@@ -194,8 +193,7 @@
   [path a-fn]
   (when (is-dir? path)
     (each thing (os/dir path)
-      (def thing-path
-        (path-join path thing))
+      (def thing-path (path-join path thing))
       (when (is-dir? thing-path)
         (a-fn thing-path)
         (visit-dirs thing-path a-fn)))))
@@ -216,8 +214,7 @@
   [path a-fn]
   (when (is-dir? path)
     (each thing (os/dir path)
-      (def thing-path
-        (path-join path thing))
+      (def thing-path (path-join path thing))
       (when (or (is-file? thing-path)
                 (is-dir? thing-path))
         (a-fn thing-path))
