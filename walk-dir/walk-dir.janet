@@ -225,6 +225,27 @@
                   acc)
   )
 
+(defn like-files-and-dirs
+  ``
+  Recursively visit directory tree starting at `path`, accumulating
+  file and dir paths (including symlinks to such) by default into array
+  `acc`.  If optional argument `a-fn` is specified, instead accumulate
+  only file and dir paths for which `a-fn` applied to the corresponding
+  path returns a truthy result.
+  ``
+  [path acc &opt a-fn]
+  (default a-fn identity)
+  (when (is-or-like-dir? path)
+    (each thing (os/dir path)
+      (def thing-path (path-join path thing))
+      (when (or (is-or-like-dir? thing-path)
+                (is-or-like-file? thing-path))
+        (when (a-fn thing-path)
+          (array/push acc thing-path)))
+      (when (is-or-like-dir? thing-path)
+        (files-and-dirs thing-path acc a-fn))))
+  acc)
+
 (defn visit-files
   ``
   Recursively traverse directory tree starting at `path`, applying
