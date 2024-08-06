@@ -54,6 +54,9 @@
   )
 
 (defn is-dir?
+  ``
+  Returns true if `path` is a directory.  Otherwise, returns false.
+  ``
   [path]
   (when-let [path path
              stat (os/lstat path)]
