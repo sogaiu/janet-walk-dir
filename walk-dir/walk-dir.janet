@@ -317,12 +317,12 @@
 (defn from-such-do
   ``
   Starting at directory `root-dir`, determine all descendant file and
-  dir paths whose full paths satisfy `pred`.  Then for each determined
-  path, in the order specified by `order`, perform `action`.  `order`
-  is an optional argument which defaults to `identity`.  `action` is a
-  function that is passed a single argument, the current path.  The
-  passed path argument is prefixed with `root-dir` and is constructed
-  based on it.
+  dir paths (including symlinked) whose full paths satisfy `pred`.
+  Then for each determined path, in the order specified by `order`,
+  perform `action`.  `order` is an optional argument which defaults to
+  `identity`.  `action` is a function that is passed a single argument,
+  the current path.  The passed path argument is prefixed with
+  `root-dir` and is constructed based on it.
   ``
   [root-dir pred action &opt order verbose]
   (default order identity)
@@ -330,11 +330,11 @@
   (def dir (os/cwd))
   (def paths @[])
 
-  (files-and-dirs root-dir paths pred)
+  (like-files-and-dirs root-dir paths pred)
 
   (each a-path (order paths)
-    (when (or (is-file? a-path)
-              (is-dir? a-path))
+    (when (or (is-or-like-file? a-path)
+              (is-or-like-dir? a-path))
       (when verbose (print a-path))
       (action a-path))))
 
