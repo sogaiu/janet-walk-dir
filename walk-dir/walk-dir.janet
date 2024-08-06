@@ -71,6 +71,25 @@
 
  )
 
+(defn is-or-like-dir?
+  ``
+  Returns true if `path` is or like (so symlinks count) a directory.
+  Otherwise, returns false.
+  ``
+  [path]
+  (when-let [path path
+             stat (os/stat path)]
+    (= :directory (stat :mode))))
+
+(comment
+
+  (is-or-like-dir? (or (os/getenv "HOME")
+                       (os/getenv "USERPROFILE")))
+  # =>
+  true
+
+ )
+
 (defn is-file?
   ``
   Returns true if `path` is an ordinary file (e.g. not a directory).
@@ -102,6 +121,18 @@
   true
 
  )
+
+(defn is-or-like-file?
+  ``
+  Returns true if `path` is or like (so symlinks count) an ordinary file
+  (e.g. not a directory).  Otherwise, returns false.
+  ``
+  [path]
+  (truthy?
+    (when-let [path path
+               mode-stat (os/stat path :mode)]
+      (= :file mode-stat))))
+
 
 (defn just-files
   ``
