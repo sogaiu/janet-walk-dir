@@ -84,8 +84,7 @@
   Otherwise, returns false.
 
   If optional argument `symlink` is true, return true for symlinks
-  that resolve to directories.  The default value for `symlink`
-  is false.
+  that resolve to files.  The default value for `symlink` is false.
   ``
   [path &opt symlink]
   (default symlink false)
@@ -120,9 +119,11 @@
 (defn just-files
   ``
   Recursively visit directory tree starting at `path`, accumulating
-  file (not directory) paths by default into array `acc`.  If optional
-  argument `a-fn` is specified, instead accumulate only file paths
-  for which `a-fn` applied to the file path returns a truthy result.
+  file (not directory) paths by default into array `acc`.
+
+  If optional argument `a-fn` is specified, instead accumulate only
+  file paths for which `a-fn` applied to the file path returns a
+  truthy result.
   ``
   [path acc &opt a-fn]
   (default a-fn identity)
@@ -152,9 +153,11 @@
 (defn just-dirs
   ``
   Recursively visit directory tree starting at `path`, accumulating
-  directory paths by default into array `acc`.  If optional
-  argument `a-fn` is specified, instead accumulate only directory paths
-  for which `a-fn` applied to the directory path returns a truthy result.
+  directory paths by default into array `acc`.
+
+  If optional argument `a-fn` is specified, instead accumulate only
+  directory paths for which `a-fn` applied to the directory path
+  returns a truthy result.
   ``
   [path acc &opt a-fn]
   (default a-fn identity)
