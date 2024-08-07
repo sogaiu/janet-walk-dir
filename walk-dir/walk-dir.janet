@@ -178,60 +178,21 @@
 
  )
 
-(defn files-and-dirs
-  ``
-  Recursively visit directory tree starting at `path`, accumulating
-  file and dir paths by default into array `acc`.
-
-  If optional argument `a-fn` is specified, instead accumulate only
-  file and dir paths for which `a-fn` applied to the corresponding
-  path returns a truthy result.
-
-  If optional argument `symlink` is true, treat a symlink to a file
-  or directory as a file or directory, respectively.
-  ``
-  [path acc &opt a-fn symlink]
-  (default a-fn identity)
-  (default symlink false)
-  (when (is-dir? path symlink)
-    (each thing (os/dir path)
-      (def thing-path (path-join path thing))
-      (when (or (is-dir? thing-path symlink)
-                (is-file? thing-path symlink))
-        (when (a-fn thing-path)
-          (array/push acc thing-path)))
-      (when (is-dir? thing-path symlink)
-        (files-and-dirs thing-path acc a-fn symlink))))
-  acc)
-
-(comment
-
-  (def acc @[])
-
-  (files-and-dirs (path-join (os/getenv "HOME")
-                             ".config")
-                  acc)
-  )
-
 (defn visit-files
   ``
   Recursively traverse directory tree starting at `path`, applying
   argument `a-fn` to each encountered file (not directory) path.
-
-  If optional argument `symlink` is true, treat a symlink to a file
-  or directory as a file or directory, respectively.
   ``
-  [path a-fn &opt symlink]
-  (default symlink false)
-  (when (is-dir? path symlink)
+  [path a-fn]
+  (when (is-dir? path)
     (each thing (os/dir path)
       (def thing-path (path-join path thing))
       (cond
-        (is-file? thing-path symlink)
+        (is-file? thing-path)
         (a-fn thing-path)
         #
-        (is-dir? thing-path symlink)
-        (visit-files thing-path a-fn symlink)))))
+        (is-dir? thing-path)
+        (visit-files thing-path a-fn)))))
 
 (comment
 
@@ -245,18 +206,14 @@
   ``
   Recursively traverse directory tree starting at `path`, applying
   argument `a-fn` to each encountered directory path.
-
-  If optional argument `symlink` is true, treat a symlink to a file
-  or directory as a file or directory, respectively.
   ``
-  [path a-fn &opt symlink]
-  (default symlink false)
-  (when (is-dir? path symlink)
+  [path a-fn]
+  (when (is-dir? path)
     (each thing (os/dir path)
       (def thing-path (path-join path thing))
-      (when (is-dir? thing-path symlink)
+      (when (is-dir? thing-path)
         (a-fn thing-path)
-        (visit-dirs thing-path a-fn symlink)))))
+        (visit-dirs thing-path a-fn)))))
 
 (comment
 
@@ -270,20 +227,16 @@
   ``
   Recursively traverse directory tree starting at `path`, applying
   argument `a-fn` to each encountered path (file and directory).
-
-  If optional argument `symlink` is true, treat a symlink to a file
-  or directory as a file or directory, respectively.
   ``
-  [path a-fn &opt symlink]
-  (default symlink false)
-  (when (is-dir? path symlink)
+  [path a-fn]
+  (when (is-dir? path)
     (each thing (os/dir path)
       (def thing-path (path-join path thing))
-      (when (or (is-file? thing-path symlink)
-                (is-dir? thing-path symlink))
+      (when (or (is-file? thing-path)
+                (is-dir? thing-path))
         (a-fn thing-path))
-      (when (is-dir? thing-path symlink)
-        (visit thing-path a-fn symlink)))))
+      (when (is-dir? thing-path)
+        (visit thing-path a-fn)))))
 
 (comment
 
@@ -293,98 +246,3 @@
 
  )
 
-(defn from-such-do
-  ``
-  Starting at directory `root-dir`, determine all descendant file and
-  dir paths (including symlinked) whose paths satisfy `pred`.  Then
-  for each determined path, in the order specified by `order`, perform
-  `action`.
-
-  `order` is an optional argument which defaults to `identity`.
-
-  `action` is a function that is passed a single argument, the current
-   path.  The passed path argument is prefixed with `root-dir` and is
-  constructed based on it.
-
-  If optional argument `symlink` is true, treat a symlink to a file
-  or directory as a file or directory, respectively.
-  ``
-  [root-dir pred action &opt order verbose symlink]
-  (default order identity)
-  (default verbose false)
-  (default symlink false)
-  (def dir (os/cwd))
-  (def paths @[])
-
-  (files-and-dirs root-dir paths pred symlink)
-
-  (each a-path (order paths)
-    (when (or (is-file? a-path symlink)
-              (is-dir? a-path symlink))
-      (when verbose (print a-path))
-      (action a-path))))
-
-(comment
-
-  (from-such-do
-    (string (os/getenv "HOME") "/src/janet")
-    |(when (and (is-dir? $)
-                (find (fn [path]
-                        (string/has-suffix? ".c" path))
-                      (os/dir $)))
-       $)
-    print)
-
-  (from-such-do
-    (string (os/getenv "HOME") "/src/janet")
-    |(when (and (is-dir? $)
-                (find (fn [path]
-                        (string/has-suffix? ".janet" path))
-                      (os/dir $)))
-       $)
-    print)
-
-  (from-such-do
-    (string (os/getenv "HOME") "/src/janet")
-    |(when (and (is-dir? $)
-                (find (fn [path]
-                        (string/has-suffix? ".janet" path))
-                      (os/dir $)))
-       $)
-    |(print (string/slice $
-                          (inc (last (string/find-all "/" $)))))
-    sort
-    true)
-
-  (do
-    (def results @[])
-    (from-such-do
-      (string (os/getenv "HOME") "/src/janet")
-      |(when (and (is-dir? $)
-                  (find (fn [path]
-                          (string/has-suffix? ".janet" path))
-                        (os/dir $)))
-         $)
-      |(array/push results
-                   (string/slice $
-                                 (inc (last (string/find-all "/" $)))))
-      sort)
-    (pp results))
-
-  (from-such-do
-    (string "../../janet")
-    |(when (and (is-dir? $)
-                (find (fn [path]
-                        (string/has-suffix? ".janet" path))
-                      (os/dir $)))
-       $)
-    print)
-
-  (from-such-do
-    (string (os/getenv "HOME") "/src")
-    |(when (and (is-dir? $)
-                (has-value? (os/dir $) ".git"))
-       $)
-    print)
-
-  )
