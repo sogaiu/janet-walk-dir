@@ -144,8 +144,8 @@
 
   (def acc @[])
 
-  (just-files (string (os/getenv "HOME")
-                      ".config")
+  (just-files (path-join (os/getenv "HOME")
+                         ".config")
               acc)
 
   )
