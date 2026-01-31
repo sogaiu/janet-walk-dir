@@ -1,31 +1,28 @@
 (defn path-join
   [& parts]
-  (string/join parts
-               (dyn :path-fs-sep
-                    (if (= :windows (os/which))
-                      `\`
-                      "/"))))
+  (def bs-land? (let [osw (os/which)]
+                  (or (= :windows osw) (= :mingw osw))))
+  (def sep (dyn :path-fs-sep (if bs-land? `\` "/")))
+  #
+  (string/join parts sep))
 
 (comment
 
-  (do
-    (def sep (dyn :path-fs-sep))
+  (let [sep (dyn :path-fs-sep)]
     (defer (setdyn :path-fs-sep sep)
       (setdyn :path-fs-sep "/")
       (path-join "/tmp" "test.txt")))
   # =>
   "/tmp/test.txt"
 
-  (do
-    (def sep (dyn :path-fs-sep))
+  (let [sep (dyn :path-fs-sep)]
     (defer (setdyn :path-fs-sep sep)
       (setdyn :path-fs-sep "/")
       (path-join "/tmp" "foo" "test.txt")))
   # =>
   "/tmp/foo/test.txt"
 
-  (do
-    (def sep (dyn :path-fs-sep))
+  (let [sep (dyn :path-fs-sep)]
     (defer (setdyn :path-fs-sep sep)
       (setdyn :path-fs-sep `\`)
       (path-join "C:" "windows" "system32")))
@@ -36,10 +33,10 @@
 
 (defn path-ext
   [path]
-  (let [results (string/find-all "." path)]
-    (if-let [last-one (last results)]
-      (string/slice path last-one)
-      "")))
+  (def dots (string/find-all "." path))
+  (if-let [last-one (last dots)]
+    (string/slice path last-one)
+    ""))
 
 (comment
 
