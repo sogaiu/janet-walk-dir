@@ -64,10 +64,10 @@
   [path &opt symlink]
   (default symlink false)
   (when-let [path path
-             stat (if symlink
-                    (os/stat path)
-                    (os/lstat path))]
-    (= :directory (stat :mode))))
+             st-mode (if symlink
+                       (os/stat path :mode)
+                       (os/lstat path :mode))]
+    (= :directory st-mode)))
 
 (comment
 
@@ -76,7 +76,7 @@
   # =>
   true
 
- )
+  )
 
 (defn is-file?
   ``
@@ -105,12 +105,9 @@
   (let [name (string (gensym))]
     (if (os/stat name)
       true
-      (do
+      (defer (os/rm name)
         (spit name "hello")
-        (def res
-          (is-file? name))
-        (os/rm name)
-        res)))
+        (is-file? name))))
   # =>
   true
 
