@@ -113,7 +113,9 @@
 (defn just-files
   ``
   Recursively visit directory tree starting at `path`, accumulating
-  file (not directory) paths by default into array `acc`.
+  file (not directory) paths into optional array argument `acc`.
+
+  If no `acc` argument is provided a new array will be used.
 
   If optional argument `a-fn` is specified, instead accumulate only
   file paths for which `a-fn` applied to the file path returns a
@@ -123,13 +125,13 @@
   directories as directories.  That is, follow symlinks that point to
   directories and descend into them looking for files.
   ``
-  [path acc &opt a-fn symlink]
+  [path &opt acc a-fn symlink]
+  (default acc @[])
   (default a-fn identity)
   (default symlink false)
   (when (is-dir? path symlink)
     (each thing (os/dir path)
-      (def thing-path
-        (path-join path thing))
+      (def thing-path (path-join path thing))
       (cond
         (and (is-file? thing-path)
              (a-fn thing-path))
@@ -152,7 +154,9 @@
 (defn just-dirs
   ``
   Recursively visit directory tree starting at `path`, accumulating
-  directory paths by default into array `acc`.
+  directory paths into optional array argument `acc`.
+
+  If no `acc` argument is provided a new array will be used.
 
   If optional argument `a-fn` is specified, instead accumulate only
   directory paths for which `a-fn` applied to the directory path
@@ -162,13 +166,13 @@
   directories as directories.  That is, follow symlinks that point to
   directories and descend into them looking for directories.
   ``
-  [path acc &opt a-fn symlink]
+  [path &opt acc a-fn symlink]
+  (default acc @[])
   (default a-fn identity)
   (default symlink false)
   (when (is-dir? path symlink)
     (each thing (os/dir path)
-      (def thing-path
-        (path-join path thing))
+      (def thing-path (path-join path thing))
       (when (is-dir? thing-path symlink)
         (when (a-fn thing-path)
           (array/push acc thing-path))
