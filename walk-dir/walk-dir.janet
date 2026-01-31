@@ -90,10 +90,10 @@
   (default symlink false)
   (truthy?
     (when-let [path path
-               mode-stat (if symlink
-                           (os/stat path)
-                           (os/lstat path :mode))]
-      (= :file mode-stat))))
+               st-mode (if symlink
+                         (os/stat path :mode)
+                         (os/lstat path :mode))]
+      (= :file st-mode))))
 
 (comment
 
