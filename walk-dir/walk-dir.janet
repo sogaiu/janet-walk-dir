@@ -34,6 +34,7 @@
 (defn path-ext
   [path]
   (def dots (string/find-all "." path))
+  #
   (if-let [last-one (last dots)]
     (string/slice path last-one)
     ""))
@@ -108,7 +109,7 @@
   # =>
   true
 
- )
+  )
 
 (defn just-files
   ``
@@ -145,8 +146,7 @@
 
   (def acc @[])
 
-  (just-files (path-join (os/getenv "HOME")
-                         ".config")
+  (just-files (path-join (os/getenv "HOME") ".config")
               acc)
 
   )
@@ -183,11 +183,10 @@
 
   (def acc @[])
 
-  (just-dirs (path-join (os/getenv "HOME")
-                        ".config")
+  (just-dirs (path-join (os/getenv "HOME") ".config")
              acc)
 
- )
+  )
 
 (defn visit-files
   ``
@@ -207,11 +206,10 @@
 
 (comment
 
-  (visit-files (path-join (os/getenv "HOME")
-                          ".config")
+  (visit-files (path-join (os/getenv "HOME") ".config")
                |(eprint $))
 
- )
+  )
 
 (defn visit-dirs
   ``
@@ -228,11 +226,10 @@
 
 (comment
 
-  (visit-dirs (path-join (os/getenv "HOME")
-                         ".config")
+  (visit-dirs (path-join (os/getenv "HOME") ".config")
               |(eprint $))
 
- )
+  )
 
 (defn visit
   ``
@@ -251,9 +248,8 @@
 
 (comment
 
-  (visit (path-join (os/getenv "HOME")
-                    ".config")
+  (visit (path-join (os/getenv "HOME") ".config")
          |(eprint $))
 
- )
+  )
 
