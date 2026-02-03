@@ -1,8 +1,12 @@
 (defn path-join
   [& parts]
-  (def bs-land? (let [osw (os/which)]
-                  (or (= :windows osw) (= :mingw osw))))
-  (def sep (dyn :path-fs-sep (if bs-land? `\` "/")))
+  (def sep
+    (if-let [sep (dyn :path-fs-sep)]
+      sep
+      (if (let [osw (os/which)]
+            (or (= :windows osw) (= :mingw osw)))
+        `\`
+        "/")))
   #
   (string/join parts sep))
 
